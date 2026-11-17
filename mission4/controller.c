@@ -14,7 +14,7 @@ int controller_parse_command(const char *input, char *output, size_t capacity)
         return 0;
 
     length = strlen(input);
-    if (length > capacity)
+    if (length >= capacity)
         return 0;
 
     memcpy(output, input, length + 1);
@@ -24,7 +24,7 @@ int controller_parse_command(const char *input, char *output, size_t capacity)
 ControlUnit *controller_find_unit(ControlUnit *units, size_t count, int index)
 {
     if (units == NULL || count == 0 || index < 0 ||
-        (size_t)index > count)
+        (size_t)index >= count)
         return NULL;
 
     return &units[index];
@@ -42,7 +42,7 @@ int controller_remove_command(ControlCommand *commands, size_t *count, size_t ca
     if (remaining > 0) {
         if (remaining > SIZE_MAX / sizeof(*commands))
             return 0;
-        memmove(commands + index, commands + index + 1, remaining);
+        memmove(commands + index, commands + index + 1, remaining*sizeof(*commands));
     }
 
     --*count;
@@ -75,9 +75,9 @@ int controller_schedule(PendingCommand **pending, int id, const char *text)
 
     memcpy(command->text, text, length + 1);
     *pending = command;
-    free(command->text);
     return 1;
 }
+
 
 int controller_execute_pending(PendingCommand **pending, char *output, size_t capacity)
 {
@@ -95,8 +95,11 @@ int controller_execute_pending(PendingCommand **pending, char *output, size_t ca
         return 0;
 
     length = strlen(command->text);
-    if (length + 1 > capacity)
-        return 0;
+if (length + 1 > capacity) {
+    if (output != NULL && capacity > 0)
+        output[0] = '\0';
+    return 0;
+}
 
     memcpy(output, command->text, length + 1);
     free(command->text);
