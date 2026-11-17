@@ -15,8 +15,7 @@ int main(void)
     {
         myBuffer[strcspn(myBuffer,"\r\n")]='\0';
         int re=process_transmission(myBuffer);
-        if (re==0)
-        {
+        if (re==0){
             countIN+=1;
         }else{
             countV+=1;
