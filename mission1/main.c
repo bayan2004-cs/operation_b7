@@ -27,4 +27,3 @@ int main(void)
     printf("Recovered: %d | Rejected: %d\n" , countV,countIN);
     return 0;
 }
-
