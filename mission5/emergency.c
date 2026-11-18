@@ -75,7 +75,7 @@ const AuthorizationRecord *find_authorization(const AuthorizationRecord *records
     if (records == NULL || count == 0){
         return NULL;
     }
-    if (request_id <= 0 || unit_id <= 0 || required_clearance < 0) {
+    if (request_id < 0 || unit_id < 0 || required_clearance < 0) {
         return NULL;
     }
     for (size_t i = 0; i < count; i++){
