@@ -195,7 +195,50 @@ void emergency_request_free(EmergencyRequest *request)
 
 int validate_emergency_request(const EmergencyRequest *request)
 {
-    (void)request;
-    /* TODO Stage D: validate the complete request without changing it. */
+    if (request == NULL) {
+        return 0;
+    }
+    if (request->device == NULL) {
+        return 0;
+    }
+    if (memchr(request->device, '\0', M5_DEVICE_CAPACITY) == NULL ||
+    memchr(request->mode, '\0', M5_MODE_CAPACITY) == NULL ||
+    memchr(request->action, '\0', M5_ACTION_CAPACITY) == NULL) {
     return 0;
+}
+    if (strcmp(request->device, "BEERSHEVANATOR") != 0) {
+        return 0;
+    }
+    if (strcmp(request->mode, "emergency") != 0) {
+        return 0;
+    }
+    if (strcmp(request->action, "self-destruct") != 0) {
+        return 0;
+    }
+    if (request->request_id <= 0 || request->unit_id <= 0) {
+        return 0;
+    }
+    if (request->authorization.approver_id <= 0) {
+        return 0;
+    }
+    if (request->authorization.request_id != request->request_id ||
+        request->authorization.unit_id != request->unit_id) {
+        return 0;
+    }
+    if (request->authorization.approved != 1) {
+        return 0;
+    }
+    if (request->authorization.clearance < M5_ADMIN_CLEARANCE || request->authorization.clearance > 5) {
+        return 0;
+    }
+    if (request->step_count != 3 || request->steps == NULL) {
+        return 0;
+    }
+    if (request->steps[0] != STEP_PREPARE_EMERGENCY ||
+        request->steps[1] != STEP_REQUEST_AUTHORIZATION ||
+        request->steps[2] != STEP_EXECUTE_COMMAND) {
+        return 0;
+    }
+
+    return 1;
 }
