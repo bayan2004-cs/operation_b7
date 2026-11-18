@@ -2,22 +2,87 @@
 
 int parse_launch_options(int argc, char *const argv[], LaunchOptions *out)
 {
-    (void)argc;
-    (void)argv;
-    (void)out;
-    /* TODO Stage A: validate and copy all three option/value pairs. */
-    return 0;
+    int device = 0;
+    int mode = 0;
+    int action = 0;
+    if(out == NULL){
+        return 0;
+    }
+    out -> device[0] = '\0';
+    out -> mode[0] = '\0';
+    out -> action[0] = '\0';
+    if (argc != 7 ){
+        return 0;
+    }
+    for (int i = 1; i<argc; i=i+2){
+        if(device > 1 || mode > 1 || action > 1){
+            return 0;
+        }
+        int w  = i+1; 
+        if (w >= argc) {
+            return 0;
+            }
+        if(strcmp(argv[i], "--mode") == 0){
+            if(mode != 0){
+                return 0;
+                }
+            if(strcmp(argv[w],"emergency") != 0){
+                return 0;
+            }
+            else{
+                mode = mode+1;
+                strcpy(out->mode, argv[w]);
+            }
+        }
+        if(strcmp(argv[i], "--device") == 0){
+            if(device != 0){
+                return 0;
+                }
+            if(strcmp(argv[w],"BEERSHEVANATOR") != 0){
+                return 0;
+            }
+            else{
+                device = device+1;
+                strcpy(out->device, argv[w]);
+            }
+        }
+        if(strcmp(argv[i], "--action") == 0){
+            if(action != 0){
+                return 0;
+                }
+            if(strcmp(argv[w],"self-destruct") != 0){
+                return 0;
+            }
+            else{
+                action = action+1;
+                strcpy(out->action, argv[w]);
+            }
+        }
+        
+    }
+    if (device != 1 || mode != 1 || action != 1) {
+        out->device[0] = '\0';
+        out->mode[0] = '\0';
+        out->action[0] = '\0';
+        return 0;
+    }
+    return 1;
 }
 
 const AuthorizationRecord *find_authorization(const AuthorizationRecord *records, size_t count,
                                               int request_id, int unit_id, int required_clearance)
 {
-    (void)records;
-    (void)count;
-    (void)request_id;
-    (void)unit_id;
-    (void)required_clearance;
-    /* TODO Stage B: return the first usable record in the original array. */
+    if (records == NULL){
+        return NULL;
+    }
+    for (int i = 0; i < count; i++){
+       if (records[i].request_id == request_id &&
+            records[i].unit_id == unit_id &&
+            records[i].clearance >= required_clearance &&
+            records[i].approved == 1) {
+            return &records[i];
+            }
+    }
     return NULL;
 }
 
