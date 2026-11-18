@@ -1,6 +1,8 @@
 #include "emergency.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
 int parse_launch_options(int argc, char *const argv[], LaunchOptions *out)
 {
 
@@ -89,13 +91,81 @@ int emergency_request_init(EmergencyRequest *dest,
                            const AuthorizationRecord *authorization,
                            const int *steps, size_t step_count)
 {
-    (void)dest;
-    (void)options;
-    (void)authorization;
-    (void)steps;
-    (void)step_count;
-    /* TODO Stage C: create independent owned copies with rollback. */
-    return 0;
+    if(dest == NULL || options == NULL || authorization == NULL){
+        return 0;
+    }
+
+    if(dest->device != NULL || dest->steps != NULL ||
+       dest->step_count != 0 || dest->request_id != 0 ||
+       dest->unit_id != 0 ||
+       dest->authorization.request_id != 0 ||
+       dest->authorization.unit_id != 0 ||
+       dest->authorization.approver_id != 0 ||
+       dest->authorization.clearance != 0 ||
+       dest->authorization.approved != 0){
+        return 0;
+    }
+
+    for(size_t i = 0; i < M5_MODE_CAPACITY; i++){
+        if(dest->mode[i] != '\0'){
+            return 0;
+        }
+    }
+
+    for(size_t i = 0; i < M5_ACTION_CAPACITY; i++){
+        if(dest->action[i] != '\0'){
+            return 0;
+        }
+    }
+
+    if(step_count < 1 || step_count > 8 || steps == NULL){
+        return 0;
+    }
+
+    if(options->device[0] == '\0'){
+        return 0;
+    }
+
+    if(memchr(options->device, '\0', M5_DEVICE_CAPACITY) == NULL ||
+       memchr(options->mode, '\0', M5_MODE_CAPACITY) == NULL ||
+       memchr(options->action, '\0', M5_ACTION_CAPACITY) == NULL){
+        return 0;
+    }
+
+    if(step_count > SIZE_MAX / sizeof(int)){
+        return 0;
+    }
+
+    dest->authorization = *authorization;
+    dest->request_id = authorization->request_id;
+    dest->unit_id = authorization->unit_id;
+    dest->step_count = step_count;
+
+    snprintf(dest->mode, M5_MODE_CAPACITY, "%s", options->mode);
+    snprintf(dest->action, M5_ACTION_CAPACITY, "%s", options->action);
+
+    size_t de_len = strlen(options->device);
+    dest->device = malloc(de_len + 1);
+
+    if(dest->device == NULL){
+        emergency_request_free(dest);
+        return 0;
+    }
+
+    strcpy(dest->device, options->device);
+
+    dest->steps = malloc(step_count * sizeof(int));
+
+    if(dest->steps == NULL){
+        emergency_request_free(dest);
+        return 0;
+    }
+
+    for(size_t i = 0; i < step_count; i++){
+        dest->steps[i] = steps[i];
+    }
+
+    return 1;
 }
 
 void emergency_request_free(EmergencyRequest *request)
