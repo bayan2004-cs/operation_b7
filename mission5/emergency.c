@@ -12,7 +12,7 @@ int parse_launch_options(int argc, char *const argv[], LaunchOptions *out)
     out -> device[0] = '\0';
     out -> mode[0] = '\0';
     out -> action[0] = '\0';
-    if (argc != 7 ){
+    if (argc != 7){
         return 0;
     }
     for (int i = 1; i<argc; i=i+2){
@@ -28,6 +28,9 @@ int parse_launch_options(int argc, char *const argv[], LaunchOptions *out)
                 return 0;
                 }
             if(strcmp(argv[w],"emergency") != 0){
+                out->device[0] = '\0';
+                out->mode[0] = '\0';
+                out->action[0] = '\0';
                 return 0;
             }
             else{
@@ -35,11 +38,14 @@ int parse_launch_options(int argc, char *const argv[], LaunchOptions *out)
                 strcpy(out->mode, argv[w]);
             }
         }
-        if(strcmp(argv[i], "--device") == 0){
+        else if(strcmp(argv[i], "--device") == 0){
             if(device != 0){
                 return 0;
                 }
             if(strcmp(argv[w],"BEERSHEVANATOR") != 0){
+                out->device[0] = '\0';
+                out->mode[0] = '\0';
+                out->action[0] = '\0';
                 return 0;
             }
             else{
@@ -47,11 +53,14 @@ int parse_launch_options(int argc, char *const argv[], LaunchOptions *out)
                 strcpy(out->device, argv[w]);
             }
         }
-        if(strcmp(argv[i], "--action") == 0){
+        else if(strcmp(argv[i], "--action") == 0){
             if(action != 0){
                 return 0;
                 }
             if(strcmp(argv[w],"self-destruct") != 0){
+                out->device[0] = '\0';
+                out->mode[0] = '\0';
+                out->action[0] = '\0';
                 return 0;
             }
             else{
@@ -59,7 +68,9 @@ int parse_launch_options(int argc, char *const argv[], LaunchOptions *out)
                 strcpy(out->action, argv[w]);
             }
         }
-        
+        else{
+            return 0;
+        }
     }
     if (device != 1 || mode != 1 || action != 1) {
         out->device[0] = '\0';
