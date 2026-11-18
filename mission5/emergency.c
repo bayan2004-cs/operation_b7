@@ -25,6 +25,9 @@ int parse_launch_options(int argc, char *const argv[], LaunchOptions *out)
             }
         if(strcmp(argv[i], "--mode") == 0){
             if(mode != 0){
+                out->device[0] = '\0';
+                out->mode[0] = '\0';
+                out->action[0] = '\0';
                 return 0;
                 }
             if(strcmp(argv[w],"emergency") != 0){
@@ -40,6 +43,9 @@ int parse_launch_options(int argc, char *const argv[], LaunchOptions *out)
         }
         else if(strcmp(argv[i], "--device") == 0){
             if(device != 0){
+                out->device[0] = '\0';
+                out->mode[0] = '\0';
+                out->action[0] = '\0';
                 return 0;
                 }
             if(strcmp(argv[w],"BEERSHEVANATOR") != 0){
@@ -55,6 +61,9 @@ int parse_launch_options(int argc, char *const argv[], LaunchOptions *out)
         }
         else if(strcmp(argv[i], "--action") == 0){
             if(action != 0){
+                out->device[0] = '\0';
+                out->mode[0] = '\0';
+                out->action[0] = '\0';
                 return 0;
                 }
             if(strcmp(argv[w],"self-destruct") != 0){
