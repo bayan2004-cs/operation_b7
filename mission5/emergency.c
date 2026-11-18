@@ -1,5 +1,6 @@
 #include "emergency.h"
-
+#include <string.h>
+#include <stdio.h>
 int parse_launch_options(int argc, char *const argv[], LaunchOptions *out)
 {
     int device = 0;
@@ -75,7 +76,7 @@ const AuthorizationRecord *find_authorization(const AuthorizationRecord *records
     if (records == NULL){
         return NULL;
     }
-    for (int i = 0; i < count; i++){
+    for (size_t i = 0; i < count; i++){
        if (records[i].request_id == request_id &&
             records[i].unit_id == unit_id &&
             records[i].clearance >= required_clearance &&
