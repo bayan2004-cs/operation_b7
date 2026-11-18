@@ -3,18 +3,16 @@
 #include <stdio.h>
 int parse_launch_options(int argc, char *const argv[], LaunchOptions *out)
 {
-    // 1. קודם מוודאים ש-out קיים כדי שנוכל לכתוב אליו
+
     if (out == NULL) {
         return 0;
     }
     
-    // 2. מיד מאפסים את המבנה! 
-    // כך מובטח שבכל שגיאה (כולל argv==NULL) הוא יישאר ריק כנדרש.
     out->device[0] = '\0';
     out->mode[0] = '\0';
     out->action[0] = '\0';
 
-    // 3. עכשיו אפשר לבדוק בבטחה את שאר הקלטים
+    
     if (argv == NULL) {
         return 0;
     }
@@ -31,7 +29,7 @@ int parse_launch_options(int argc, char *const argv[], LaunchOptions *out)
             goto failure;
         }
 
-        // וידוא שהמחרוזות עצמן אינן NULL
+        
         if (argv[i] == NULL || argv[w] == NULL) {
             goto failure;
         }
@@ -60,10 +58,10 @@ int parse_launch_options(int argc, char *const argv[], LaunchOptions *out)
         goto failure;
     }
 
-    return 1; // הצלחה
+    return 1;
 
 failure:
-    // איפוס חוזר למקרה שנכתב משהו וגילינו שגיאה באמצע הלולאה
+    
     out->device[0] = '\0';
     out->mode[0] = '\0';
     out->action[0] = '\0';
