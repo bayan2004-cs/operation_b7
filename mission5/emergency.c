@@ -170,8 +170,24 @@ int emergency_request_init(EmergencyRequest *dest,
 
 void emergency_request_free(EmergencyRequest *request)
 {
-    (void)request;
-    /* TODO Stage C: release owned allocations and reset every field. */
+    if (request == NULL) {
+        return;
+    }
+    if (request->device != NULL) {
+        free(request->device);
+        request->device = NULL;
+        }
+    if (request->steps != NULL) {
+        free(request->steps);
+        request->steps = NULL;
+        }
+    request->step_count = 0;
+    request->request_id = 0;
+    request->unit_id = 0;
+    
+    memset(&request->authorization, 0, sizeof(request->authorization));
+    memset(request->mode, 0, M5_MODE_CAPACITY);
+    memset(request->action, 0, M5_ACTION_CAPACITY);
 }
 
 int validate_emergency_request(const EmergencyRequest *request)
