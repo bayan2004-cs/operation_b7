@@ -72,14 +72,17 @@ failure:
 const AuthorizationRecord *find_authorization(const AuthorizationRecord *records, size_t count,
                                               int request_id, int unit_id, int required_clearance)
 {
-    if (records == NULL){
+    if (records == NULL || count == 0){
+        return NULL;
+    }
+    if (request_id <= 0 || unit_id <= 0 || required_clearance < 0) {
         return NULL;
     }
     for (size_t i = 0; i < count; i++){
        if (records[i].request_id == request_id &&
             records[i].unit_id == unit_id &&
             records[i].clearance >= required_clearance &&
-            records[i].approved == 1) {
+            records[i].approved != 0) {
             return &records[i];
             }
     }
